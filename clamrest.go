@@ -47,6 +47,22 @@ func home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(resJson))
 }
 
+func status(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("responding to status request")
+	c := clamd.NewClamd(opts["CLAMD_PORT"])
+
+	response, err := c.Stats()
+	fmt.Println("c.Stats() response: ", response)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, "clamd not running")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, "clamd running")
+}
+
 func scanPathHandler(w http.ResponseWriter, r *http.Request) {
 	paths, ok := r.URL.Query()["path"]
 	if !ok || len(paths[0]) < 1 {
@@ -220,6 +236,7 @@ func main() {
 	http.HandleFunc("/scan", scanHandler)
 	http.HandleFunc("/scanPath", scanPathHandler)
 	http.HandleFunc("/", home)
+	http.HandleFunc("/status", status)
 
 	// Prometheus metrics
 	http.Handle("/metrics", promhttp.HandlerFor(
