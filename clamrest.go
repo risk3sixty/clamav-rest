@@ -48,11 +48,11 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func status(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("responding to status request")
+	// fmt.Println("responding to status request")
 	c := clamd.NewClamd(opts["CLAMD_PORT"])
 
-	response, err := c.Stats()
-	fmt.Println("c.Stats() response: ", response)
+	_, err := c.Stats()
+	// fmt.Fprint("c.Stats() response: ", _)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
